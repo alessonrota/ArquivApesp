@@ -100,7 +100,7 @@ arquivapesp/
 - **Verificação de Integridade** (checksums)
 
 <a name="campos"></a>
-## 7. Campos do Formulário Modular
+## 7. Campos do Formulário Modular (baseado na ISAD(G))
 | Área | Cód. | Campo/Subcampo | Exemplo (padrão) |
 |------|------|----------------|------------------|
 | Identificação do repositório | `BR` | País | *Brasil* |
@@ -195,7 +195,7 @@ def main(dados, origem, destino):
 2. **Importar** no topo de `formulario.py`.
 3. **Adicionar** uma tupla em `opcoes = [("Título", callback), …]`.
 4. **Implementar** `callback` equivalente aos demais`.
-
+```
 <a name="roadmap"></a>
 ## 14. Roadmap & TODO
 - [ ] Finalizar refatoração de `conversao.py`, `renomeacao.py`, `verificacao_integridade.py` para aceitar `dados`.
@@ -204,10 +204,10 @@ def main(dados, origem, destino):
 - [ ] Criação de exportação PDF da presente documentação.
 - [ ] Testes unitários com `pytest`.
 
-##Qual_licença?
+<a name="licenca"></a>
+## 15
 
-
-
+<a name="agradecimentos"></a>
 ## 16. Agradecimentos
 - Arquivo Público do Estado de São Paulo (APESP)
 - Comunidade Python
