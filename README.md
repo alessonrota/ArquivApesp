@@ -198,11 +198,12 @@ def main(dados, origem, destino):
 ```
 <a name="roadmap"></a>
 ## 14. Roadmap & TODO
-- [ ] Finalizar refatoração de `conversao.py`, `renomeacao.py`, `verificacao_integridade.py` para aceitar `dados`.
-- [ ] Implementar sequenciamento automático no padrão `A-00001`.
-- [ ] Adicionar suporte a **hash SHA‑256** na verificação.
-- [ ] Criação de exportação PDF da presente documentação.
-- [ ] Testes unitários com `pytest`.
+| Funcionalidade                         | Status       |
+|----------------------------------------|--------------|
+| Indicador de fluxo de trabalho         | Pendente     |
+| Módulo para comparação de arquivos     | Pendente     |
+| Conversor de formatos                  | Pendente     |
+| Conversor de imagens                   | Implementado |
 
 <a name="licenca"></a>
 ## 15
@@ -213,9 +214,4 @@ def main(dados, origem, destino):
 - Comunidade Python
 
 
-| Funcionalidade                         | Status       |
-|----------------------------------------|--------------|
-| Indicador de fluxo de trabalho         | Pendente     |
-| Módulo para comparação de arquivos     | Pendente     |
-| Conversor de formatos                  | Pendente     |
-| Conversor de imagens                   | Implementado |
+
