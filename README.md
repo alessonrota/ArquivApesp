@@ -204,6 +204,7 @@ def main(dados, origem, destino):
 | Módulo para comparação de arquivos     | Pendente     |
 | Conversor de formatos                  | Pendente     |
 | Modo sem formulário                    | Pendente     |
+| Versão Linux                           | Implementado |
 | Verificador de Duplicados              | Implementado |
 | Conversor de imagens                   | Implementado |
 
