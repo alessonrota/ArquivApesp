@@ -204,10 +204,10 @@ def main(dados, origem, destino):
 - [ ] Criação de exportação PDF da presente documentação.
 - [ ] Testes unitários com `pytest`.
 
-<a name="licenca"></a>
+##Qual_licença?
 
 
-<a name="agradecimentos"></a>
+
 ## 16. Agradecimentos
 - Arquivo Público do Estado de São Paulo (APESP)
 - Comunidade Python
