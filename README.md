@@ -203,6 +203,8 @@ def main(dados, origem, destino):
 | Indicador de fluxo de trabalho         | Pendente     |
 | Módulo para comparação de arquivos     | Pendente     |
 | Conversor de formatos                  | Pendente     |
+| Modo sem formulário                    | Pendente     |
+| Verificador de Duplicados              | Implementado |
 | Conversor de imagens                   | Implementado |
 
 <a name="licenca"></a>
