@@ -1,10 +1,13 @@
-  # ArquivAPESP – Documentação Técnica e de Uso
+Consegue arrumar pra mim. Não fazer explicações, só corrigir formatação:
 
-> **Versão:** 0.2  |  **Data:** 9 mai 2025  |  **Autor:** Alesson Ramon Rota e colaboradores
+# ArquivAPESP – Documentação Técnica e de Uso
+
+> **Versão:** 0.3 | **Data:** 12 mai 2025 | **Autor:** Alesson Ramon Rota & colaboradores
 
 ---
 
 ## Índice
+
 1. [Introdução](#introducao)
 2. [Visão Geral do Sistema](#visao-geral)
 3. [Instalação e Requisitos](#instalacao)
@@ -14,207 +17,288 @@
 7. [Campos do Formulário Modular](#campos)
 8. [Convenção de Nomes](#convencao)
 9. [Módulos e Funções](#modulos)
-10. [Arquivos de Log e Relatórios CSV](#logs)
+10. [Arquivos de Log (CSV + PREMIS)](#logs)
 11. [Tratamento de Erros](#erros)
 12. [Empacotamento com PyInstaller](#pyinstaller)
-13. [Extensibilidade | Como adicionar novas operações](#extensibilidade)
+13. [Extensibilidade](#extensibilidade)
 14. [Roadmap & TODO](#roadmap)
 15. [Licença](#licenca)
 16. [Agradecimentos](#agradecimentos)
 
 ---
-<a name="introducao"></a>
-## 1. Introdução
-O **ArquivAPESP** é uma aplicação desktop (Python 3) orientada à gestão de acervos digitais. Ela executa operações recorrentes no fluxo de preservação: **cópia/movimentação**, **conversão** de formatos, **renomeação** institucional e **verificação de integridade**.  
-O usuário preenche um formulário modular inspirado em normas arquivísticas (ICA‑ATOM/ISAD‑G), que alimenta os padrões de nomenclatura dos arquivos processados e dos logs gerados.
 
-> **Objetivo principal**: reduzir erros humanos, garantir rastreabilidade e manter coerência na estrutura de pastas/nomeação de objetos digitais.
+<a id="introducao"></a>
 
-<a name="visao-geral"></a>
-## 2. Visão Geral do Sistema
-![Diagrama de Alto Nível](diagrama_alto_nivel.png)
+## 1 · Introdução
 
-| Camada | Responsabilidade | Módulos |
-|--------|------------------|---------|
-| **Apresentação** | Interface Tkinter; coleta de parâmetros | `formulario.py` |
-| **Aplicação** | Lógica de cada operação | `copiar_mover.py`, `conversao.py`, `renomeacao.py`, `verificacao_integridade.py` |
-| **Persistência** | Geração de CSV, logs, gravação de erros | Funções utilitárias em cada módulo |
+**ArquivAPESP** é uma aplicação desktop em **Python 3** para preservar e organizar acervos digitais.
+Funcionalidades principais:
 
-<a name="instalacao"></a>
-## 3. Instalação e Requisitos
-### 3.1. Dependências
+| Macro-função  | O que faz                      | PREMIS *eventType*                         |
+| ------------- | ------------------------------ | ------------------------------------------ |
+| Cópia / Mover | Replica ou relocaliza arquivos | `fileCopy` / `fileMove`                    |
+| Conversão     | Imagem → PDF único / múltiplos | `formatConversion`                         |
+| Renomeação    | Aplica convenção institucional | `filenameAssignment`                       |
+| Integridade   | Gera e compara checksums       | `messageDigestCalculation` / `fixityCheck` |
+| Duplicados    | Detecta hash duplicado         | `identification`                           |
+
+Para **cada ação** são gravados:
+
+1. CSV humano em `logs/`
+2. `<premis:event>` em `premis/premis_log.xml` (v 3, namespace oficial)
+
+> **Objetivo:** reduzir falhas manuais e assegurar trilha de auditoria de preservação digital.
+
+---
+
+<a id="visao-geral"></a>
+
+## 2 · Visão Geral do Sistema
+
+![Diagrama de alto nível](docs/diagrama_alto_nivel.png)<!-- opcional -->
+
+| Camada           | Responsabilidade                  | Principais módulos                                                                                    |
+| ---------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Apresentação** | GUI Tkinter + coleta de metadados | `main.py`                                                                                             |
+| **Serviços**     | Lógica de negócios                | `copiar_mover.py` · `conversao.py` · `renomeacao.py` · `verificacao_integridade.py` · `duplicados.py` |
+| **Persistência** | Paths, CSV, PREMIS, erros         | `logsistema.py` · `utils_paths.py`                                                                    |
+
+---
+
+<a id="instalacao"></a>
+
+## 3 · Instalação e Requisitos
+
+### 3.1 Dependências
+
 ```bash
-Python >= 3.9
+Python >= 3.10
 pip install -r requirements.txt
-```
-`requirements.txt`
-```text
-tkinter              # GUI (já incluso em CPython padrão)
-pillow               # manipulação de imagens (conversão)
-pikepdf              # se a verificação de PDF for utilizada
-```
-### 3.2. Clonar e executar
-```bash
+
+
+
+
+3.2 Clonar e executar
+bash
+Copiar
+Editar
 git clone https://github.com/apesp/arquivapesp.git
 cd arquivapesp
-python formulario.py
-```
+python main.py
+<a id="estrutura"></a>
 
-<a name="estrutura"></a>
-## 4. Estrutura de Pastas do Projeto
-```text
+
+### 4 · Estrutura de Pastas
+text
+Copiar
+Editar
 arquivapesp/
-│  formulario.py          # GUI principal
-│  copiar_mover.py        # Operações de cópia/mover
-│  renomeacao.py          # Renomeação baseada no formulário
-│  conversao.py           # Conversão de formatos (ex.: JPG → PDF)
-│  verificacao_integridade.py # Checksums, tamanho, etc.
-│  utils.py               # Auxiliares (opcional)
+│  main.py
+│  copiar_mover.py
+│  conversao.py
+│  renomeacao.py
+│  verificacao_integridade.py
+│  duplicados.py
+│  logsistema.py
+│  utils_paths.py
 │
-├─ logs/                  # Armazena CSVs e .txt de erro
-├─ docs/                  # Esta documentação, diagramas, tutoriais
-└─ dist/                  # Binários gerados pelo PyInstaller
+├─logs/        # CSV + erro.txt
+├─premis/      # premis_log.xml
+├─docs/        # Diagrama, README, tutoriais
+└─dist/        # Executável gerado
+utils_paths.py expõe:
+
+python
+Copiar
+Editar
+from pathlib import Path
+BASE = Path(__file__).parent
+def caminho(*partes):            # ex.: caminho("logs", "foo.csv")
+    p = BASE.joinpath(*partes)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    return p
+<a id="fluxo"></a>
+
+5 · Fluxo de Execução
+Usuário inicia main.py.
+
+Preenche formulário (valores padrão podem ser mantidos).
+
+Seleciona módulo desejado.
+
+Módulo recebe dados + paths (quando necessário).
+
+Gera CSV-parâmetro (planejamento) → confirmação.
+
+Executa ação → grava log de execução + evento PREMIS.
+
+Relatórios mostrados em diálogos e salvos em logs/.
+
+<a id="gui"></a>
+
+6 · Interface Gráfica (Tkinter)
+6.1 Formulário
+LabelFrame por área ISAD-G.
+
+Entradas Entry com texto de preenchimento.
+
+Prosseguir → Menu (stateful).
+
+6.2 Menu
+Botão	Diálogo extra	Thread/Barra	Observações
+Cópia/Mover	Gerar / Executar, incluir ocultos	n/d	suporta renomear-on-the-fly
+Conversão	PDF único?	n/d	Pillow
+Renomeação	Selecionar campos, nº inicial	n/d	cópia + renome
+Integridade	Gerar checksum / Comparar	n/d	SHA-256
+Duplicados	—	sim	progress-bar + thread
+
+<a id="campos"></a>
+
+7 · Campos do Formulário
+Área	Código	Label	Padrão
+Id. repositório	BR	País	Br
+SP	UF	Sp
+Repositório	Repositório	DIG
+Conjunto	Fundo	Fundo	Imigrantes
+Subconjunto	Subconjunto	Subconjunto
+Caracterização	Gênero	Gênero	ICO
+Espécie/Tipo	Espécie	FOT
+Dispositivo	Técnica	FOT
+Ação	Forma	Copia
+Usuário	USR	Operador	Fulano
+
+<a id="convencao"></a>
+
+8 · Convenção de Nomes
+php-template
+Copiar
+Editar
+<país>_<uf>_<repos>_<fundo>_<sub>_<genero>_<espécie-tec>_<forma>_<nnn>.<ext>
+Ex.: br_sp_dig_imigrantes_ico_fot_copia_001.jpg
+
+Todos os logs reutilizam o identificador concatenado; por ex.
+Parametro_br_sp_dig_imigrantes_ico_fot_copia.csv
+
+<a id="modulos"></a>
+
+9 · Módulos Principais
+9.1 main.py
+Método	Papel
+criar_formulario()	Renderiza campos e guarda widgets
+obter_dados_formulario()	Valida / retorna dict
+executar_*()	Chama módulos de serviço
+
+9.2 copiar_mover.py
+Função	Papel
+listar_arquivos()	Recursivo (flag incluir .ocultos)
+gerar_parametro_csv()	Pergunta renomear? → CSV + PREMIS
+_processar()	Copiar ou mover (ler CSV)
+dlg_operacao()	UI gerar/executar + checkbox ocultos
+main()	Orquestra tudo
+
+9.3 conversao.py
+Conversão via Pillow; opção PDF único x múltiplos.
+
+PREMIS formatConversion.
+
+9.4 renomeacao.py
+Selecionar campos via checkboxes, numeração inicial.
+
+Copia arquivos já renomeados.
+
+PREMIS filenameAssignment.
+
+9.5 verificacao_integridade.py
+SHA-256 de todos os arquivos (messageDigestCalculation).
+
+Compara dois relatórios (fixityCheck).
+
+9.6 duplicados.py
+Agrupa por tamanho → confirma hash.
+
+Progress-bar (tkinter ttk) em thread.
+
+PREMIS identification para cada duplicado detectado.
+
+9.7 logsistema.py
+python
+Copiar
+Editar
+def registrar_evento_global(dados, descricao,
+                            evento_tipo="softwareExecution",
+                            objeto_path="N/A"):
+    """
+    1. Acrescenta linha em logs/logGeralSistema.csv
+    2. Acrescenta <premis:event> em premis/premis_log.xml
+    """
+<a id="logs"></a>
+
+10 · Arquivos de Log
+Arquivo	O que contém	Gerado por
+logs/logGeralSistema.csv	Data • Hora • Usuário • Descrição	logsistema.py
+premis/premis_log.xml	PREMIS events (UUID, agentes, objetos)	logsistema.py
+Parametro_*.csv	Plano de ação	Cada módulo
+logCopy_*, logMove_*, logConversao_*, …	Resultado linha-a-linha	Cada módulo
+erro_*.txt	Tracebacks	salvar_erro()
+
+<a id="erros"></a>
+
+11 · Tratamento de Erros
+salvar_erro() → erro.txt (anexo).
+
+GUI mostra messagebox.showerror.
+
+Loops “continuam” (marca Erro no log).
+
+Thread de duplicados envia apenas int ou ("DONE", dup) → evita AttributeError.
+
+<a id="pyinstaller"></a>
+
+12 · Empacotamento
+bash
+Copiar
+Editar
+pyinstaller ^
+  --onefile --noconsole ^
+  --add-data "logs;logs" ^
+  --add-data "premis;premis" ^
+  --name ArquivAPESP main.py
+Executável final em dist/ArquivAPESP.exe.
+
+<a id="extensibilidade"></a>
+
+13 · Extensibilidade (passo-a-passo)
+Criar módulo meu_modulo.py:
+
+python
+Copiar
+Editar
+def main(dados):
+# sua lógica
+logsistema.registrar_evento_global(
+dados, "Minha operação", "softwareExecution"
+)
+
+
+<a id="roadmap"></a>
+## 14 · Roadmap & TODO
+
+| Item                                           | Status     |
+|------------------------------------------------|------------|
+| Versão Linux                                   | ✅ Finalizado |
+| Duplicados                                     | ✅ FinaQlizado |
+| Conversão imagem → PDF                         | ✅ Finalizado |
+| Arquivos ocultos                               | ✅ Finalizado |
+| Log duplicados                                 | ✅ Finalizado |
+| Sistema de diretórios (logs, premis, etc.)     | ✅ Finalizado |
+| Ferramentas duplicados                         | ✅ Finalizado |
+| Prenis backup (premis_log.xml)                 | ✅ Finalizado |
+| OAIS + BagIt/METS‑PREMIS                       | 🔄 Em andamento |
+| BagIt + pacote METS‑PREMIS                     | 🔄 Em andamento |
+| Nome-saída-pdf configurável                    | 🔜 Não iniciado |
+| CLI (modo headless)                            | 🔜 Não iniciado |
+| Agendador de rotinas                           | 🔜 Não iniciado |
+| Config.toml para parâmetros globais            | 🔜 Não iniciado |
+| `ttkbootstrap` / dark-mode                     | 💭 Planejado |
+| Multi-idioma (i18n)                            | 💭 Planejado |
 ```
-
-<a name="fluxo"></a>
-## 5. Fluxo de Execução
-1. **Usuário inicia** `formulario.py`.
-2. Preenche **formulário modular** com metadados arquivísticos.
-3. Escolhe a operação (cópia, conversão, renomeação, verificação).
-4. O módulo correspondente recebe o **dicionário `dados`** com todos os campos.
-5. O módulo gera **CSV de parâmetros** e executa a tarefa.
-6. Logs são salvos em `logs/` (nomes derivados de `dados`).
-7. Mensagens de sucesso/erro são exibidas via `messagebox`.
-
-<a name="gui"></a>
-## 6. Interface Gráfica (Tkinter)
-### 6.1. Janela de Formulário
-- Cada **Área** da ISAD‑G está agrupada em um `LabelFrame`.
-- Os campos já vêm com **valores padrão** (podem ser sobrescritos).
-- Botão **Prosseguir** guarda os dados e avança para o menu.
-
-### 6.2. Menu Principal
-- **Cópia/Mover Arquivos**
-- **Conversão** (imagens → PDF)
-- **Renomeação** (padrão institucional)
-- **Verificação de Integridade** (checksums)
-
-<a name="campos"></a>
-## 7. Campos do Formulário Modular (baseado na ISAD(G))
-| Área | Cód. | Campo/Subcampo | Exemplo (padrão) |
-|------|------|----------------|------------------|
-| Identificação do repositório | `BR` | País | *Brasil* |
-| | `SP` | Estado (UF) | *São Paulo* |
-| | `IIEP` | Repositório | *IIEP* |
-| Conjunto documental | `INF` | Fundo | *InFormar* |
-| | `EDUPOP` | Subfundo / Grupo funcional | *Educação popular* |
-| Caracterização | `ICO` | Gênero documental | *Iconográfico* |
-| | `DPS` | Espécie | *Diapositivo* |
-| | `FOT` | Técnica | *Exposição fotográfica* |
-| | `DT1` | Forma | *Derivada* |
-| Unidade de descrição | `CID` | Assunto | *Cidades* |
-| | `002` | Dossiê | *002* |
-| | `001` | Item | *001* |
-| Extensão | `ext` | Extensão de arquivo | *jpg* |
-
-<a name="convencao"></a>
-## 8. Convenção de Nomes
-A função `gerar_nomes_logs()` concatena os valores para formar um **identificador** padronizado.  
-**Exemplo de arquivo final:**
-```
-br-spiiep_informar_A-00014.jpg
-```
-*Onde:*
-- `br` → país (duas letras)
-- `sp` → UF (duas letras)
-- `iiep` → repositório
-- `informar` → fundo
-- `A` → tipo (constante ou derivada de outro campo)
-- `00014` → sequencial acrescentado pelo módulo (renomeação)
-
-Arquivos de log seguem a mesma raiz:
-```
-parâmetro_br-spiiep_informar_A.csv
-logCopy_br-spiiep_informar_A.csv
-```
-
-<a name="modulos"></a>
-## 9. Módulos e Funções
-### 9.1. `formulario.py`
-| Função/Método | Descrição |
-|---------------|-----------|
-| `AppGUI.create_field()` | Cria `Label + Entry` com valor padrão |
-| `obter_dados_formulario()` | Retorna `dict` com todos os campos |
-| `executar_copiar()` | Chama `copiar_mover.main(dados, origem, destino)` |
-| `executar_conversao()` | idem para `conversao` |
-| `executar_renomeacao()` | idem para `renomeacao` |
-| `executar_verificacao_integridade()` | idem para `verificacao_integridade` |
-
-### 9.2. `copiar_mover.py`
-| Função | Descrição |
-|--------|-----------|
-| `listar_arquivos()` | Recursivo; retorna lista de `Path` |
-| `gerar_nomes_logs(dados)` | Monta nomes de logs a partir do formulário |
-| `gerar_parametro_csv()` | Gera CSV de parâmetros + log de geração |
-| `copiar_arquivos()` | Executa `shutil.copy2` conforme CSV |
-| `mover_arquivos()` | Executa `shutil.move` conforme CSV |
-| `escolher_acao()` | Caixinha Tk para selecionar Copiar/Mover |
-| `main(dados, origem, destino)` | Orquestra o fluxo |
-
-<a name="logs"></a>
-## 10. Arquivos de Log e Relatórios CSV
-Cada operação gera três elementos principais:
-1. **CSV de parâmetros** – descreve *o que* será feito.
-2. **Log de parâmetros** – metadados da geração (data, operador, total de linhas).
-3. **Log de execução** – resultado linha a linha (Sucesso/Erro).
-
-Todos são gravados na pasta de trabalho ou em `logs/` (configurável).
-
-<a name="erros"></a>
-## 11. Tratamento de Erros
-- Função `salvar_erro()` concatena exceções em `erro.txt`.
-- GUI exibe `messagebox.showerror` para falhas críticas (ex.: diretório vazio).
-- Operações continuam mesmo se um arquivo individual falhar (log registra a ocorrência).
-
-<a name="pyinstaller"></a>
-## 12. Empacotamento com PyInstaller
-```bash
-pyinstaller --onefile --noconsole --name ArquivAPESP formulario.py
-```
-- `--onefile` embute dependências em executável único.
-- `--noconsole` oculta prompt Windows.
-- Artefato final: `dist/ArquivAPESP.exe`.
-
-<a name="extensibilidade"></a>
-## 13. Extensibilidade | Como adicionar novas operações
-1. **Criar** `novo_modulo.py` seguindo contrato:
-   ```python
-def main(dados, origem, destino):
-    pass  # sua lógica
-   ```
-2. **Importar** no topo de `formulario.py`.
-3. **Adicionar** uma tupla em `opcoes = [("Título", callback), …]`.
-4. **Implementar** `callback` equivalente aos demais`.
-```
-<a name="roadmap"></a>
-## 14. Roadmap & TODO
-| Funcionalidade                         | Status       |
-|----------------------------------------|--------------|
-| Indicador de fluxo de trabalho         | Pendente     |
-| Módulo para comparação de arquivos     | Pendente     |
-| Conversor de formatos                  | Pendente     |
-| Modo sem formulário                    | Pendente     |
-| Versão Linux                           | Implementado |
-| Verificador de Duplicados              | Implementado |
-| Conversor de imagens                   | Implementado |
-
-<a name="licenca"></a>
-## 15
-
-<a name="agradecimentos"></a>
-## 16. Agradecimentos
-- Arquivo Público do Estado de São Paulo (APESP)
-- Comunidade Python
-
-
-
