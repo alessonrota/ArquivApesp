@@ -1,4 +1,4 @@
-````markdown
+
 # ArquivAPESP – Documentação Técnica e de Uso
 
 > **Versão:** 0.3 | **Data:** 12 mai 2025 | **Autor:** Alesson Ramon Rota & colaboradores
