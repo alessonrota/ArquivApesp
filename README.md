@@ -337,7 +337,7 @@ def main(dados):
 
 ## 15 · Licença
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
+A definit (LICENSE).
 
 ---
 
