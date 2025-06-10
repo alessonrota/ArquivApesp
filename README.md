@@ -1,9 +1,19 @@
 
 # ArquivAPESP – Documentação Técnica e de Uso
 
-> **Versão:** 0.3 | **Data:** 12 mai 2025 | **Autor:** Alesson Ramon Rota & colaboradores
+> **Versão:** 0.3 | **Data:** 12 mai 2025 | Equipe de Desenvolvimento – ArquivAPESP
+
+| Função                   | Nome(s)                                                            |
+| ------------------------ | ------------------------------------------------------------------ |
+| **Coordenação Geral**    | Alesson Ramon Rota                                                 |
+| **Arquitetura e Código** | Alesson Ramon Rota                                                 |
+| **Documentação**         | Jaqueline Lorenseti                                                |
+| **Apoio Institucional**  | Coordenação de Arquivos Digitais – Arquivo Público do Estado de SP |
+| **Testagem e Validação** | Jaqueline Lorenseti, Camila Brandi, Abigayl Gabriela Prado Furtado |
 
 ---
+
+Objetivo: protótipo programado para realizar operações arquivísticas básicas a partir de operação local com máquina client. Foi concebido inicialmente a partir da Plataforma de Automação Digital para Arquivos (Padá), licença CC BY-NC-SA 4.0, conservando operações a partir de parâmetros esturutados.
 
 ## Índice
 
