@@ -346,7 +346,7 @@ def main(dados):
 
 ## 15 · Licença
 
-Sem definição. Todos os direitos 
+Sem definição.
 ---
 
 <a id="agradecimentos"></a>
