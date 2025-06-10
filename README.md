@@ -13,7 +13,7 @@
 
 ---
 
-Objetivo: protótipo programado para realizar operações arquivísticas básicas a partir de operação local com máquina client. Foi concebido inicialmente a partir da Plataforma de Automação Digital para Arquivos (Padá), licença CC BY-NC-SA 4.0, conservando operações a partir de parâmetros esturutados.
+Objetivo: protótipo programado para realizar operações arquivísticas básicas a partir de operação local com máquina client. Foi concebido inicialmente a partir da Plataforma de Automação Digital para Arquivos (Padá), licença CC BY-NC-SA 4.0, conservando operações a partir de parâmetros estrutados. Estatus: descontinuado até nova decisão (10/06/2025).
 
 ## Índice
 
@@ -32,7 +32,6 @@ Objetivo: protótipo programado para realizar operações arquivísticas básica
 13. [Extensibilidade](#extensibilidade)
 14. [Roadmap & TODO](#roadmap)
 15. [Licença](#licenca)
-16. [Agradecimentos](#agradecimentos)
 
 ---
 
@@ -347,17 +346,11 @@ def main(dados):
 
 ## 15 · Licença
 
-A definit (LICENSE).
-
+Sem definição. Todos os direitos 
 ---
 
 <a id="agradecimentos"></a>
 
-## 16 · Agradecimentos
-
-* Colaboradores: Alesson Ramon Rota, Jaque-Loren, equipe APESP
-* Comunidade Python
-* Projetos de preservação digital Open Source
 
 ```
 ```
